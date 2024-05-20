@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "345795676882",
+    "project_id": "chesscoachapp-1361e",
+    "storage_bucket": "chesscoachapp-1361e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345795676882:android:1b2d5d7b5e97ab71af3b0b",
+        "android_client_info": {
+          "package_name": "com.example.chess_coach_app2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3n_vSiLLHxroyE-_jy_HAJlEMM8Rppxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
