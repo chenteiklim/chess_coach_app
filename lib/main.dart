@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chess_coach_app2/boardGame.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,10 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Firebase Auth',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: const LoginPage(),
     );
   }
@@ -40,6 +37,10 @@ class LoginPage extends StatelessWidget {
         print('Signed in: ${userCredential.user!.email}');
         // Navigate to the next screen after successful login
         // Navigator.push(context, MaterialPageRoute(builder: (context) => NextScreen()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BoardGame()),
+        );
       } catch (e) {
         print('Error signing in: $e');
         // Show an error message to the user
