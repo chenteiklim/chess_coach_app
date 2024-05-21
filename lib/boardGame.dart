@@ -202,6 +202,7 @@ class _BoardGameState extends State<BoardGame> {
 
     switch (piece.type) {
       case ChessPiecesType.pawn:
+      case ChessPiecesType.pawn:
       // Check the square immediately in front of the pawn
         if (isInBoard(row + direction, col) &&
             board[row + direction][col] == null) {
@@ -223,14 +224,25 @@ class _BoardGameState extends State<BoardGame> {
             board[row + direction][col - 1]!.isWhite != piece.isWhite) {
           candidateMoves.add([row + direction, col - 1]);
         }
-
         if (isInBoard(row + direction, col + 1) &&
             board[row + direction][col + 1] != null &&
             board[row + direction][col + 1]!.isWhite != piece.isWhite) {
+
           candidateMoves.add([row + direction, col + 1]);
         }
-
-
+        if (isInBoard(row , col - 1) &&
+            (row == 3 || row == 4) &&
+            board[row ][col - 1] != null &&
+            board[row ][col - 1]!.isWhite != piece.isWhite) {
+          candidateMoves.add([row + direction, col - 1]);
+        }
+        if (isInBoard(row + direction, col + 1) &&
+            (row == 3 || row == 4) &&
+            board[row][col + 1] != null &&
+            board[row][col + 1]!.isWhite != piece.isWhite) {
+          candidateMoves.add([row + direction, col + 1]);
+        }
+        break;
 
       case ChessPiecesType.rook:
       // horizontal and vertical directions
@@ -406,15 +418,33 @@ class _BoardGameState extends State<BoardGame> {
   void movePiece(int newRow, int newCol) {
 
 // if the new spot has an enemy piece
-    if (board[newRow][newCol] != null) {
-// add the captured piece to the appropriate list
-      var capturedPiece = board[newRow][newCol];
+
+    bool isEnPassant = false;
+
+    // Check for en passant
+    if (selectedPiece?.type == ChessPiecesType.pawn) {
+      if ((selectedRow == 3 && newRow == 2 && board[3][newCol]?.type == ChessPiecesType.pawn && board[3][newCol]?.isWhite != selectedPiece!.isWhite) ||
+          (selectedRow == 4 && newRow == 5 && board[4][newCol]?.type == ChessPiecesType.pawn && board[4][newCol]?.isWhite != selectedPiece!.isWhite)) {
+        isEnPassant = true;
+      }
+    }
+
+    // If the new spot has an enemy piece or it's an en passant capture
+    if (board[newRow][newCol] != null || isEnPassant) {
+      // Add the captured piece to the appropriate list
+      var capturedPiece = isEnPassant ? board[selectedRow][newCol] : board[newRow][newCol];
       if (capturedPiece!.isWhite) {
         whitePiecesTaken.add(capturedPiece);
       } else {
         blackPiecesTaken.add(capturedPiece);
       }
+
+      // Remove the captured pawn in en passant
+      if (isEnPassant) {
+        board[selectedRow][newCol] = null;
+      }
     }
+
 
     if (selectedPiece?.type == ChessPiecesType.king) {
       if (selectedPiece!.isWhite) {
@@ -453,15 +483,7 @@ class _BoardGameState extends State<BoardGame> {
     }
 
     isWhiteTurn = !isWhiteTurn;
-    Move move = Move(
-      id: generateUniqueMoveId(), // Assume generateUniqueMoveId() generates unique IDs
-      startRow: selectedRow,
-      startCol: selectedCol,
-      endRow: newRow,
-      endCol: newCol,
-      pieceMoved: selectedPiece!,
-      pieceCaptured: board[newRow][newCol], // If a piece is captured
-    );
+
   }
 
   bool isKingInCheck(bool isWhiteKing) {
@@ -606,43 +628,83 @@ class _BoardGameState extends State<BoardGame> {
             ),
           ),
           // Chessboard component
-          Container(
-            width: 420,
-            height: 450,
-            child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 8 * 8,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 8,
+          Row(
+            children: [
+                  Container(
+                  width: 400, // Reduced width to make the chessboard smaller
+                  height: 420, // Reduced height to make the chessboard smaller
+                  padding: EdgeInsets.all(4), // Added padding for spacing between squares
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 8 * 8,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      int row = index ~/ 8;
+                      int col = index % 8;
+
+                      bool isSelected = selectedCol == col && selectedRow == row;
+                      bool isValidMove = false;
+                      for (var position in validMoves) {
+                        if (position[0] == row && position[1] == col) {
+                          isValidMove = true;
+                        }
+                      }
+
+                      return SizedBox(
+                        width: 22, // Reduced width to make the squares smaller
+                        height: 32, // Reduced height to make the squares smaller
+                        child: Square(
+                          isValidMove: isValidMove,
+                          onTap: () => pieceSelected(row, col),
+                          isSelected: isSelected,
+                          isWhite: isWhite(index),
+                          piece: board[row][col],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              Column(
+
+                children: [
+                  for (int i = 1; i <= 8; i++)
+                    Padding(
+                    padding: EdgeInsets.only(top: i == 1 ? 25 : 25),
+                    child: Text(
+                        '$i',
+                        style: TextStyle(fontSize: 16, color: Colors.white ),
+                      ),
+                    ),
+                ],
               ),
-              itemBuilder: (context, index) {
-                int row = index ~/ 8;
-                int col = index % 8;
-
-                bool isSelected = selectedCol == col && selectedRow == row;
-                bool isValidMove = false;
-                for (var position in validMoves) {
-                  if (position[0] == row && position[1] == col) {
-                    isValidMove = true;
-                  }
-                }
-
-                return Square(
-                  isValidMove: isValidMove,
-                  onTap: () => pieceSelected(row, col),
-                  isSelected: isSelected,
-                  isWhite: isWhite(index),
-                  piece: board[row][col],
-                );
-              },
-            ),
+            ],
           ),
+    Container(
+      width: 400,
+      height: 40,
+      color: Colors.black,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (var letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+            Padding(
+              padding: EdgeInsets.only(left: letter == 'a' ? 0 : 3),
+              child: Text(
+                    letter,
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+          ),
+        ],
+      ),
+    ),
           Container(
             width: 500,
-            height:300,
+            height:200,
             color: Colors.black,
             // Label above the chessboard
-            padding: const EdgeInsets.only(left: 20, top: 20,),
+            padding: const EdgeInsets.only(left: 20, top: 40,),
             child: Text(
               '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now reply with d5' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
               style: TextStyle(color: Colors.white, fontSize: 18),
