@@ -2,6 +2,26 @@ import 'package:chess_coach_app2/components/pieces.dart';
 import 'package:chess_coach_app2/components/square.dart';
 import 'package:flutter/material.dart';
 import 'helper/helper_function.dart';
+import 'package:chess_coach_app2/main.dart';
+class Move {
+  final int id;
+  final int startRow;
+  final int startCol;
+  final int endRow;
+  final int endCol;
+  final ChessPiece pieceMoved;
+  final ChessPiece? pieceCaptured;
+
+  Move({
+    required this.id,
+    required this.startRow,
+    required this.startCol,
+    required this.endRow,
+    required this.endCol,
+    required this.pieceMoved,
+    this.pieceCaptured,
+  });
+}
 
 class BoardGame extends StatefulWidget {
   const BoardGame({Key? key}) : super(key: key);
@@ -11,6 +31,11 @@ class BoardGame extends StatefulWidget {
 }
 
 class _BoardGameState extends State<BoardGame> {
+  int _moveId = 1;
+
+  int generateUniqueMoveId() {
+    return _moveId++;
+  }
   late List<List<ChessPiece?>> board;
   // The currently selected piece on the chess board,
 // If no piece is selected, this is null.
@@ -379,6 +404,7 @@ class _BoardGameState extends State<BoardGame> {
   }
 
   void movePiece(int newRow, int newCol) {
+
 // if the new spot has an enemy piece
     if (board[newRow][newCol] != null) {
 // add the captured piece to the appropriate list
@@ -427,6 +453,15 @@ class _BoardGameState extends State<BoardGame> {
     }
 
     isWhiteTurn = !isWhiteTurn;
+    Move move = Move(
+      id: generateUniqueMoveId(), // Assume generateUniqueMoveId() generates unique IDs
+      startRow: selectedRow,
+      startCol: selectedCol,
+      endRow: newRow,
+      endCol: newCol,
+      pieceMoved: selectedPiece!,
+      pieceCaptured: board[newRow][newCol], // If a piece is captured
+    );
   }
 
   bool isKingInCheck(bool isWhiteKing) {
@@ -503,9 +538,11 @@ class _BoardGameState extends State<BoardGame> {
     }
     return true;
   }
-
   void resetGame() {
-    Navigator.pop(context);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => BoardGame()),
+    );
     _initializeBoard();
     checkStatus = false;
     whitePiecesTaken.clear();
@@ -518,54 +555,97 @@ class _BoardGameState extends State<BoardGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white30,
+      backgroundColor: Colors.black,
       body: Column(
         children: [
+          Container(
+            width: 500,
+            height: 90,
+            color: Colors.greenAccent,
+            padding: const EdgeInsets.only(top: 20),
+            child:
+            Row(
+              children: [
 
-          // Label above the chessboard
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 10),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: Text(
-                'Enter your text here',
-                style: TextStyle(color: Colors.white),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 160),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      resetGame(); // Call the resetGame function here
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                      minimumSize: MaterialStateProperty.all<Size>(Size(80, 35)),
+                    ),
+                    child: Text(
+                      'New Game',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                      minimumSize: MaterialStateProperty.all<Size>(Size(70, 35)),
+                    ),
+                    child: Text(
+                      'Log Out',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-
           // Chessboard component
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.only(top: 0), // Add padding at the top
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 8 * 8,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
-                ),
-                itemBuilder: (context, index) {
-                  int row = index ~/ 8;
-                  int col = index % 8;
-
-                  bool isSelected = selectedCol == col && selectedRow == row;
-                  bool isValidMove = false;
-                  for (var position in validMoves) {
-                    if (position[0] == row && position[1] == col) {
-                      isValidMove = true;
-                    }
-                  }
-
-                  return Square(
-                    isValidMove: isValidMove,
-                    onTap: () => pieceSelected(row, col),
-                    isSelected: isSelected,
-                    isWhite: isWhite(index),
-                    piece: board[row][col],
-                  );
-                },
+          Container(
+            width: 420,
+            height: 450,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 8 * 8,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 8,
               ),
+              itemBuilder: (context, index) {
+                int row = index ~/ 8;
+                int col = index % 8;
+
+                bool isSelected = selectedCol == col && selectedRow == row;
+                bool isValidMove = false;
+                for (var position in validMoves) {
+                  if (position[0] == row && position[1] == col) {
+                    isValidMove = true;
+                  }
+                }
+
+                return Square(
+                  isValidMove: isValidMove,
+                  onTap: () => pieceSelected(row, col),
+                  isSelected: isSelected,
+                  isWhite: isWhite(index),
+                  piece: board[row][col],
+                );
+              },
+            ),
+          ),
+          Container(
+            width: 500,
+            height:300,
+            color: Colors.black,
+            // Label above the chessboard
+            padding: const EdgeInsets.only(left: 20, top: 20,),
+            child: Text(
+              '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now reply with d5' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
         ],
@@ -573,4 +653,3 @@ class _BoardGameState extends State<BoardGame> {
     );
   }
 }
-
