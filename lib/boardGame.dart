@@ -202,8 +202,16 @@ class _BoardGameState extends State<BoardGame> {
 
     switch (piece.type) {
       case ChessPiecesType.pawn:
-      case ChessPiecesType.pawn:
-      // Check the square immediately in front of the pawn
+        if (row == 0 && piece.isWhite) {
+          piece.type = ChessPiecesType.queen;
+          piece.imagePath = 'assets/queen.png';
+        }
+        if (row == 7 && !piece.isWhite) {
+          piece.type = ChessPiecesType.queen;
+          piece.imagePath = 'assets/queen.png';
+        }
+
+        // Check the square immediately in front of the pawn
         if (isInBoard(row + direction, col) &&
             board[row + direction][col] == null) {
           candidateMoves.add([row + direction, col]);
@@ -231,17 +239,43 @@ class _BoardGameState extends State<BoardGame> {
           candidateMoves.add([row + direction, col + 1]);
         }
         if (isInBoard(row , col - 1) &&
-            (row == 3 || row == 4) &&
+            (row == 3) &&
             board[row ][col - 1] != null &&
-            board[row ][col - 1]!.isWhite != piece.isWhite) {
+            board[row ][col - 1]!.isWhite != piece.isWhite &&
+            piece.isWhite == true
+        )
+
+        {
           candidateMoves.add([row + direction, col - 1]);
         }
-        if (isInBoard(row + direction, col + 1) &&
-            (row == 3 || row == 4) &&
-            board[row][col + 1] != null &&
-            board[row][col + 1]!.isWhite != piece.isWhite) {
+          if (isInBoard(row , col + 1) &&
+              (row == 3) &&
+              board[row ][col + 1] != null &&
+              board[row ][col + 1]!.isWhite != piece.isWhite &&
+              piece.isWhite == true
+          )
+        {
           candidateMoves.add([row + direction, col + 1]);
         }
+        if (isInBoard(row + direction, col - 1) &&
+            ( row == 4) &&
+            board[row][col - 1] != null &&
+            board[row][col - 1]!.isWhite != piece.isWhite &&
+        piece.isWhite == false
+        )
+         {
+          candidateMoves.add([row + direction, col + 1]);
+        }
+        if (isInBoard(row + direction, col + 1) &&
+            ( row == 4) &&
+            board[row][col + 1] != null &&
+            board[row][col + 1]!.isWhite != piece.isWhite &&
+            piece.isWhite == false
+        )
+        {
+          candidateMoves.add([row + direction, col + 1]);
+        }
+
         break;
 
       case ChessPiecesType.rook:
@@ -418,9 +452,7 @@ class _BoardGameState extends State<BoardGame> {
   void movePiece(int newRow, int newCol) {
 
 // if the new spot has an enemy piece
-
     bool isEnPassant = false;
-
     // Check for en passant
     if (selectedPiece?.type == ChessPiecesType.pawn) {
       if ((selectedRow == 3 && newRow == 2 && board[3][newCol]?.type == ChessPiecesType.pawn && board[3][newCol]?.isWhite != selectedPiece!.isWhite) ||
@@ -444,6 +476,8 @@ class _BoardGameState extends State<BoardGame> {
         board[selectedRow][newCol] = null;
       }
     }
+    bool queening = false;
+
 
 
     if (selectedPiece?.type == ChessPiecesType.king) {
@@ -704,7 +738,7 @@ class _BoardGameState extends State<BoardGame> {
             height:200,
             color: Colors.black,
             // Label above the chessboard
-            padding: const EdgeInsets.only(left: 20, top: 40,),
+            padding: const EdgeInsets.only(left: 20, top: 30,),
             child: Text(
               '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now reply with d5' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
               style: TextStyle(color: Colors.white, fontSize: 18),
