@@ -24,6 +24,7 @@ class Move {
 }
 
 class BoardGame extends StatefulWidget {
+
   const BoardGame({Key? key}) : super(key: key);
 
   @override
@@ -32,6 +33,9 @@ class BoardGame extends StatefulWidget {
 
 class _BoardGameState extends State<BoardGame> {
   int _moveId = 1;
+  List<int> previousKingPosition = [];
+
+
 
   int generateUniqueMoveId() {
     return _moveId++;
@@ -191,9 +195,9 @@ class _BoardGameState extends State<BoardGame> {
     });
   }
 
-  List<List<int>> calculateRowValidMoves(int row, int col, ChessPiece? piece) {
+  List<List<int>> calculateRowValidMoves(int row,  int col, ChessPiece? piece) {
     List<List<int>> candidateMoves = [];
-
+    bool haveCastle = false;
     if (piece == null) {
       return [];
     }
@@ -277,8 +281,84 @@ class _BoardGameState extends State<BoardGame> {
         }
 
         break;
+      case ChessPiecesType.king:
+        var kingMoves = [
+          [-1, -1], // Up-left
+          [-1, 0], // Up
+          [-1, 1], // Up-right
+          [0, -1], // Left
+          [0, 1], // Right
+          [1, -1], // Down-left
+          [1, 0], // Down
+          [1, 1] // Down-right
+        ];
+
+        for (var move in kingMoves) {
+          var newRow = row + move[0];
+          var newCol = col + move[1];
+
+          if (!isInBoard(newRow, newCol)) {
+            continue;
+          }
+
+          if (board[newRow][newCol] != null) {
+            if (board[newRow][newCol]!.isWhite != piece.isWhite) {
+              candidateMoves.add([newRow, newCol]); // Can capture
+            }
+            continue; // Square is blocked by a piece of the same color
+          }
+          candidateMoves.add([newRow, newCol]);
+        }
+        if ((row == 7) && (col==4) &&
+            board[7][5] == null && board[7][6] == null &&
+            piece.isWhite == true
+        )
+
+        {
+          candidateMoves.add([7, col + 2]);
+        }
+        if ((row == 7) && (col==4) &&
+            board[7][2] == null && board[7][3] == null &&
+            piece.isWhite == true
+        )
+
+        {
+          candidateMoves.add([7, col - 2]);
+        }
+        if ((row == 0) && (col==4) &&
+            board[0][5] == null && board[0][6] == null &&
+            piece.isWhite == false
+        )
+
+        {
+          candidateMoves.add([0, col + 2]);
+        }
+        if ((row == 0) && (col==4) &&
+            board[0][2] == null && board[0][3] == null &&
+            piece.isWhite == false
+        )
+
+        {
+          candidateMoves.add([0, col - 2]);
+        }
+
+
+
+        break;
 
       case ChessPiecesType.rook:
+       if ((row == 7) && (col == 7) && piece.isWhite)  {
+         candidateMoves.add([7, col - 2]);
+       }
+       if ((row == 7) && (col == 0) && piece.isWhite)  {
+         candidateMoves.add([7, col + 3]);
+       }
+       if ((row == 0) && (col == 0) && !piece.isWhite)  {
+         candidateMoves.add([0, col + 3]);
+       }
+       if ((row == 0) && (col == 7) && !piece.isWhite)  {
+         candidateMoves.add([0, col - 2]);
+       }
       // horizontal and vertical directions
         var directions = [
           [-1, 0], // up
@@ -286,6 +366,8 @@ class _BoardGameState extends State<BoardGame> {
           [0, -1], //left
           [0, 1], //right
         ];
+
+
         for (var direction in directions) {
           var i = 1;
           while (true) {
@@ -304,8 +386,9 @@ class _BoardGameState extends State<BoardGame> {
             candidateMoves.add([newRow, newCol]); // an empty valid square
             i++;
           }
+
         }
-        break;
+
 
       case ChessPiecesType.knight:
       // all eight possible L shapes the knight can move
@@ -393,38 +476,11 @@ class _BoardGameState extends State<BoardGame> {
             candidateMoves.add([newRow, newCol]); // free space
             i++;
           }
+
         }
         break;
 
-      case ChessPiecesType.king:
-        var kingMoves = [
-          [-1, -1], // Up-left
-          [-1, 0], // Up
-          [-1, 1], // Up-right
-          [0, -1], // Left
-          [0, 1], // Right
-          [1, -1], // Down-left
-          [1, 0], // Down
-          [1, 1] // Down-right
-        ];
 
-        for (var move in kingMoves) {
-          var newRow = row + move[0];
-          var newCol = col + move[1];
-
-          if (!isInBoard(newRow, newCol)) {
-            continue;
-          }
-
-          if (board[newRow][newCol] != null) {
-            if (board[newRow][newCol]!.isWhite != piece.isWhite) {
-              candidateMoves.add([newRow, newCol]); // Can capture
-            }
-            continue; // Square is blocked by a piece of the same color
-          }
-          candidateMoves.add([newRow, newCol]);
-        }
-        break;
 
       default:
     }
@@ -449,7 +505,40 @@ class _BoardGameState extends State<BoardGame> {
     return realValidMoves;
   }
 
-  void movePiece(int newRow, int newCol) {
+  void movePiece(int newRow, int newCol ) {
+    bool whiteShortCastle = false;
+    bool whiteLongCastle = false;
+    bool blackShortCastle = false;
+    bool blackLongCastle = false;
+
+    if (selectedPiece?.type == ChessPiecesType.king && board[7][6] == null && selectedPiece?.isWhite == true  ) {
+      // Save the previous king position
+      // Check for short castling and update whiteShortCastle
+        whiteShortCastle = true;
+
+    }
+    if (selectedPiece?.type == ChessPiecesType.king && board[7][3] == null && selectedPiece?.isWhite == true  ) {
+      // Save the previous king position
+
+      // Check for short castling and update whiteShortCastle
+      whiteLongCastle = true;
+
+    }
+
+    if (selectedPiece?.type == ChessPiecesType.king && board[0][6] == null && selectedPiece?.isWhite == false  ) {
+      // Save the previous king position
+
+      // Check for short castling and update whiteShortCastle
+      blackShortCastle = true;
+
+    }
+    if (selectedPiece?.type == ChessPiecesType.king && board[0][3] == null && selectedPiece?.isWhite == false ) {
+      // Save the previous king position
+
+      // Check for short castling and update whiteShortCastle
+      blackLongCastle = true;
+
+    }
 
 // if the new spot has an enemy piece
     bool isEnPassant = false;
@@ -476,7 +565,6 @@ class _BoardGameState extends State<BoardGame> {
         board[selectedRow][newCol] = null;
       }
     }
-    bool queening = false;
 
 
 
@@ -502,6 +590,7 @@ class _BoardGameState extends State<BoardGame> {
       selectedRow = -1;
       selectedCol = -1;
       validMoves = [];
+      _moveId++;
     });
 
     if (isCheckMate(!isWhiteTurn)) {
@@ -516,7 +605,19 @@ class _BoardGameState extends State<BoardGame> {
           ));
     }
 
-    isWhiteTurn = !isWhiteTurn;
+      isWhiteTurn = !isWhiteTurn;
+      if (whiteShortCastle){
+        isWhiteTurn = true;
+      }
+      if (whiteLongCastle){
+        isWhiteTurn = true;
+      }
+      if (blackShortCastle){
+        isWhiteTurn = false;
+      }
+      if (blackLongCastle){
+        isWhiteTurn = false;
+      }
 
   }
 
@@ -703,7 +804,7 @@ class _BoardGameState extends State<BoardGame> {
               Column(
 
                 children: [
-                  for (int i = 1; i <= 8; i++)
+                  for (int i = 8; i > 0; i--)
                     Padding(
                     padding: EdgeInsets.only(top: i == 1 ? 25 : 25),
                     child: Text(
@@ -740,7 +841,7 @@ class _BoardGameState extends State<BoardGame> {
             // Label above the chessboard
             padding: const EdgeInsets.only(left: 20, top: 30,),
             child: Text(
-              '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now reply with d5' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
+              '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now d5. d5 free up the square of dark square bishop and control the center.' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),

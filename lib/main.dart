@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Chess Coaching App'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
