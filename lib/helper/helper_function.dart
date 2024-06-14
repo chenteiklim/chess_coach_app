@@ -1,8 +1,8 @@
-bool isWhite(int index) {
+bool isSquareWhite(int index) {
   int x = index ~/ 8;
   int y = index % 8;
-  bool isWhite = (x + y) % 2 == 0;
-  return isWhite;
+  bool isSquareWhite = (x + y) % 2 == 0;
+  return isSquareWhite;
 }
 
 bool isInBoard(int row, int col) {

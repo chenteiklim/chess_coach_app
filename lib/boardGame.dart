@@ -3,14 +3,16 @@ import 'package:chess_coach_app2/components/square.dart';
 import 'package:flutter/material.dart';
 import 'helper/helper_function.dart';
 import 'package:chess_coach_app2/main.dart';
+import 'dart:math' as math; // for pi constant
+
 class Move {
-  final int id;
-  final int startRow;
-  final int startCol;
-  final int endRow;
-  final int endCol;
-  final ChessPiece pieceMoved;
-  final ChessPiece? pieceCaptured;
+  int id;
+  int startRow;
+  int startCol;
+  int endRow;
+  int endCol;
+  ChessPiece pieceMoved;
+  ChessPiece pieceCaptured;
 
   Move({
     required this.id,
@@ -19,7 +21,7 @@ class Move {
     required this.endRow,
     required this.endCol,
     required this.pieceMoved,
-    this.pieceCaptured,
+    required this.pieceCaptured,
   });
 }
 
@@ -32,15 +34,19 @@ class BoardGame extends StatefulWidget {
 }
 
 class _BoardGameState extends State<BoardGame> {
+  bool _isBoardRotated = false;
+
+  void _toggleRotation() {
+    setState(() {
+      _isBoardRotated = true;
+      _initializeBoard2();
+    });
+  }
+
   int _moveId = 1;
   List<int> previousKingPosition = [];
-
-
-
-  int generateUniqueMoveId() {
-    return _moveId++;
-  }
   late List<List<ChessPiece?>> board;
+
   // The currently selected piece on the chess board,
 // If no piece is selected, this is null.
   ChessPiece? selectedPiece;
@@ -53,9 +59,9 @@ class _BoardGameState extends State<BoardGame> {
   int selectedCol = -1;
   List<List<int>> validMoves = [];
 
-  List<ChessPiece> whitePiecesTaken = [];
+  List<ChessPiece?> whitePiecesTaken = [];
 
-  List<ChessPiece> blackPiecesTaken = [];
+  List<ChessPiece?> blackPiecesTaken = [];
 
   bool isWhiteTurn = true;
 
@@ -65,15 +71,18 @@ class _BoardGameState extends State<BoardGame> {
 
   @override
   void initState() {
+
     super.initState();
     _initializeBoard();
   }
 
   void _initializeBoard() {
     // initialize the board with nulls, meaning no pieces in those positions.
-    List<List<ChessPiece?>> newBoard =
-    List.generate(8, (index) => List.generate(8, (index) => null));
-
+    List<List<ChessPiece?>> newBoard = List.generate(8, (indexes) {
+      return List.generate(8, (indexes) {
+        return null;
+      });
+    });
     // Place pawns
     for (int i = 0; i < 8; i++) {
       newBoard[1][i] = ChessPiece(
@@ -86,6 +95,7 @@ class _BoardGameState extends State<BoardGame> {
         type: ChessPiecesType.pawn,
         isWhite: true,
         imagePath: 'assets/pawn.png',
+
       );
     }
 
@@ -93,67 +103,98 @@ class _BoardGameState extends State<BoardGame> {
     newBoard[0][0] = ChessPiece(
         type: ChessPiecesType.rook,
         isWhite: false,
-        imagePath: "assets/rook.png");
+        imagePath: "assets/rook.png",
+
+    );
+
+
+
     newBoard[0][7] = ChessPiece(
         type: ChessPiecesType.rook,
         isWhite: false,
-        imagePath: "assets/rook.png");
+        imagePath: "assets/rook.png",
+
+    );
     newBoard[7][0] = ChessPiece(
         type: ChessPiecesType.rook,
         isWhite: true,
-        imagePath: "assets/rook.png");
+        imagePath: "assets/rook.png",
+
+    );
     newBoard[7][7] = ChessPiece(
         type: ChessPiecesType.rook,
         isWhite: true,
-        imagePath: "assets/rook.png");
+        imagePath: "assets/rook.png",
+
+    );
 
     // Place knights
     newBoard[0][1] = ChessPiece(
         type: ChessPiecesType.knight,
         isWhite: false,
-        imagePath: "assets/knight.png");
+        imagePath: "assets/knight.png",
+
+    );
     newBoard[0][6] = ChessPiece(
         type: ChessPiecesType.knight,
         isWhite: false,
-        imagePath: "assets/knight.png");
+        imagePath: "assets/knight.png",
+
+    );
     newBoard[7][1] = ChessPiece(
         type: ChessPiecesType.knight,
         isWhite: true,
-        imagePath: "assets/knight.png");
+        imagePath: "assets/knight.png",
+
+    );
     newBoard[7][6] = ChessPiece(
         type: ChessPiecesType.knight,
         isWhite: true,
-        imagePath: "assets/knight.png");
+        imagePath: "assets/knight.png",
+
+    );
 
     // Place bishops
     newBoard[0][2] = ChessPiece(
         type: ChessPiecesType.bishop,
         isWhite: false,
-        imagePath: "assets/bishop.png");
+        imagePath: "assets/bishop.png",
 
+    );
+
+// Place bishops
     newBoard[0][5] = ChessPiece(
-        type: ChessPiecesType.bishop,
-        isWhite: false,
-        imagePath: "assets/bishop.png");
+      type: ChessPiecesType.bishop,
+      isWhite: false,
+      imagePath: "assets/bishop.png",
+
+    );
     newBoard[7][2] = ChessPiece(
         type: ChessPiecesType.bishop,
         isWhite: true,
-        imagePath: "assets/bishop.png");
+        imagePath: "assets/bishop.png",
+
+    );
+
     newBoard[7][5] = ChessPiece(
         type: ChessPiecesType.bishop,
         isWhite: true,
-        imagePath: "assets/bishop.png");
+        imagePath: "assets/bishop.png",
+
+    );
 
     // Place queens
     newBoard[0][3] = ChessPiece(
       type: ChessPiecesType.queen,
       isWhite: false,
       imagePath: 'assets/queen.png',
+
     );
     newBoard[7][3] = ChessPiece(
       type: ChessPiecesType.queen,
       isWhite: true,
       imagePath: 'assets/queen.png',
+
     );
 
     // Place kings
@@ -161,11 +202,153 @@ class _BoardGameState extends State<BoardGame> {
       type: ChessPiecesType.king,
       isWhite: false,
       imagePath: 'assets/king.png',
+
     );
     newBoard[7][4] = ChessPiece(
       type: ChessPiecesType.king,
       isWhite: true,
       imagePath: 'assets/king.png',
+
+    );
+
+    board = newBoard;
+  }
+
+  void _initializeBoard2() {
+    isWhiteTurn = true;
+    print('is initializeBoard2');
+    // initialize the board with nulls, meaning no pieces in those positions.
+    List<List<ChessPiece?>> newBoard = List.generate(8, (indexes) {
+      return List.generate(8, (indexes) {
+        return null;
+      });
+    });
+    // Place pawns
+    for (int i = 0; i < 8; i++) {
+      newBoard[1][i] = ChessPiece(
+        type: ChessPiecesType.pawn,
+        isWhite: false,
+        imagePath: 'assets/pawnRotate.png',
+      );
+
+      newBoard[6][i] = ChessPiece(
+        type: ChessPiecesType.pawn,
+        isWhite: true,
+        imagePath: 'assets/pawnRotate.png',
+
+      );
+    }
+
+    // Place rooks
+    newBoard[0][0] = ChessPiece(
+      type: ChessPiecesType.rook,
+      isWhite: false,
+      imagePath: "assets/rookRotate.png",
+
+    );
+
+
+
+    newBoard[0][7] = ChessPiece(
+      type: ChessPiecesType.rook,
+      isWhite: false,
+      imagePath: "assets/rookRotate.png",
+
+    );
+    newBoard[7][0] = ChessPiece(
+      type: ChessPiecesType.rook,
+      isWhite: true,
+      imagePath: "assets/rookRotate.png",
+
+    );
+    newBoard[7][7] = ChessPiece(
+      type: ChessPiecesType.rook,
+      isWhite: true,
+      imagePath: "assets/rookRotate.png",
+
+    );
+
+    // Place knights
+    newBoard[0][1] = ChessPiece(
+      type: ChessPiecesType.knight,
+      isWhite: false,
+      imagePath: "assets/knightRotate.png",
+
+    );
+    newBoard[0][6] = ChessPiece(
+      type: ChessPiecesType.knight,
+      isWhite: false,
+      imagePath: "assets/knightRotate.png",
+
+    );
+    newBoard[7][1] = ChessPiece(
+      type: ChessPiecesType.knight,
+      isWhite: true,
+      imagePath: "assets/knightRotate.png",
+
+    );
+    newBoard[7][6] = ChessPiece(
+      type: ChessPiecesType.knight,
+      isWhite: true,
+      imagePath: "assets/knightRotate.png",
+
+    );
+
+    // Place bishops
+    newBoard[0][2] = ChessPiece(
+      type: ChessPiecesType.bishop,
+      isWhite: false,
+      imagePath: "assets/bishopRotate.png",
+
+    );
+
+// Place bishops
+    newBoard[0][5] = ChessPiece(
+      type: ChessPiecesType.bishop,
+      isWhite: false,
+      imagePath: "assets/bishopRotate.png",
+
+    );
+    newBoard[7][2] = ChessPiece(
+      type: ChessPiecesType.bishop,
+      isWhite: true,
+      imagePath: "assets/bishopRotate.png",
+
+    );
+
+    newBoard[7][5] = ChessPiece(
+      type: ChessPiecesType.bishop,
+      isWhite: true,
+      imagePath: "assets/bishopRotate.png",
+
+    );
+
+    // Place queens
+    newBoard[0][3] = ChessPiece(
+      type: ChessPiecesType.queen,
+      isWhite: false,
+      imagePath: 'assets/queenRotate.png',
+
+    );
+    newBoard[7][3] = ChessPiece(
+      type: ChessPiecesType.queen,
+      isWhite: true,
+      imagePath: 'assets/queenRotate.png',
+
+    );
+
+    // Place kings
+    newBoard[0][4] = ChessPiece(
+      type: ChessPiecesType.king,
+      isWhite: false,
+      imagePath: 'assets/kingRotate.png',
+
+    );
+    newBoard[7][4] = ChessPiece(
+      type: ChessPiecesType.king,
+      isWhite: true,
+      imagePath: 'assets/kingRotate.png',
+
     );
 
     board = newBoard;
@@ -186,18 +369,22 @@ class _BoardGameState extends State<BoardGame> {
         selectedRow = row;
         selectedCol = col;
       } else if (selectedPiece != null &&
-          validMoves.any((element) => element[0] == row && element[1] == col)) {
+          validMoves.any((element) {
+            print('Element 0: ${element[0]}, Element 1: ${element[1]}');
+            return element[0] == row && element[1] == col;
+          })) {
         movePiece(row, col);
       }
-
+      print('Valid Moves: $validMoves');
       validMoves = calculateRealValidMoves(
           selectedRow, selectedCol, selectedPiece, true);
+      print('Valid Moves: $validMoves');
+
     });
   }
 
   List<List<int>> calculateRowValidMoves(int row,  int col, ChessPiece? piece) {
     List<List<int>> candidateMoves = [];
-    bool haveCastle = false;
     if (piece == null) {
       return [];
     }
@@ -591,6 +778,7 @@ class _BoardGameState extends State<BoardGame> {
       selectedCol = -1;
       validMoves = [];
       _moveId++;
+      print(_moveId);
     });
 
     if (isCheckMate(!isWhiteTurn)) {
@@ -720,12 +908,10 @@ class _BoardGameState extends State<BoardGame> {
             height: 90,
             color: Colors.greenAccent,
             padding: const EdgeInsets.only(top: 20),
-            child:
-            Row(
+            child: Row(
               children: [
-
                 Padding(
-                  padding: const EdgeInsets.only(left: 160),
+                  padding: const EdgeInsets.only(left: 10),
                   child: ElevatedButton(
                     onPressed: () {
                       resetGame(); // Call the resetGame function here
@@ -735,7 +921,7 @@ class _BoardGameState extends State<BoardGame> {
                       minimumSize: MaterialStateProperty.all<Size>(Size(80, 35)),
                     ),
                     child: Text(
-                      'New Game',
+                      'play as white',
                       style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
@@ -759,26 +945,44 @@ class _BoardGameState extends State<BoardGame> {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: ElevatedButton(
+                    onPressed: _toggleRotation,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                      minimumSize: MaterialStateProperty.all<Size>(Size(70, 35)),
+                    ),
+                    child: Text(
+                      'play as black',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+
           // Chessboard component
           Row(
             children: [
-                  Container(
+              Transform(
+                alignment: Alignment.center,
+                child: Container(
                   width: 400, // Reduced width to make the chessboard smaller
-                  height: 420, // Reduced height to make the chessboard smaller
-                  padding: EdgeInsets.all(4), // Added padding for spacing between squares
+                  height: 450, // Reduced height to make the chessboard smaller
+                  padding: EdgeInsets.all(4), // Added padding besides container
                   child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: 8 * 8,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 8,
-                    ),
-                    itemBuilder: (context, index) {
-                      int row = index ~/ 8;
-                      int col = index % 8;
 
+                    ),
+                    itemBuilder: (context, indexeg) {
+                      int row = indexeg ~/ 8;
+                      int col = indexeg % 8;
+                      print('Row: $row, Col: $col, Index: $indexeg');
                       bool isSelected = selectedCol == col && selectedRow == row;
                       bool isValidMove = false;
                       for (var position in validMoves) {
@@ -788,19 +992,24 @@ class _BoardGameState extends State<BoardGame> {
                       }
 
                       return SizedBox(
-                        width: 22, // Reduced width to make the squares smaller
-                        height: 32, // Reduced height to make the squares smaller
+
                         child: Square(
                           isValidMove: isValidMove,
-                          onTap: () => pieceSelected(row, col),
+                          onTap: () {
+                            pieceSelected(row, col);
+                            print('Selected Index: $indexeg');// Print the index here
+                            },
                           isSelected: isSelected,
-                          isWhite: isWhite(index),
+                          isSquareWhite: isSquareWhite(indexeg),
                           piece: board[row][col],
                         ),
                       );
                     },
                   ),
                 ),
+
+                transform: _isBoardRotated ? Matrix4.rotationZ(math.pi) : Matrix4.identity(), // Apply rotation based on state
+              ),
               Column(
 
                 children: [

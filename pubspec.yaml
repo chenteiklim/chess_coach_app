@@ -71,3 +71,9 @@ flutter:
     - assets/king.png
     - assets/queen.png
     - assets/rook.png
+    - assets/pawnRotate.png
+    - assets/bishopRotate.png
+    - assets/knightRotate.png
+    - assets/kingRotate.png
+    - assets/queenRotate.png
+    - assets/rookRotate.png

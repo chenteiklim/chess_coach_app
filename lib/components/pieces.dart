@@ -9,9 +9,13 @@ enum ChessPiecesType {
 
 class ChessPiece {
   ChessPiecesType type;
-  final bool isWhite;
+  bool isWhite;
   String imagePath;
 
   ChessPiece(
-      {required this.type, required this.isWhite, required this.imagePath});
+      {
+        required this.type,
+        required this.isWhite,
+        required this.imagePath,
+      });
 }
