@@ -1,6 +1,6 @@
 # Chess Coach App
 
-Welcome to the Chess Coach App! This is a full-featured chess game built using Flutter. It helps you improve your chess skills by providing detailed explanations for each move, making it ideal for players of all levels, especially those aspiring for competitive play. 
+Welcome to the Chess Coach App! This is a full-featured chess game built using Flutter and Firebase. It helps you improve your chess skills by providing detailed explanations for each move, making it ideal for players of all levels, especially those aspiring for competitive play. 
 
 **Key Features:**
 
@@ -18,4 +18,5 @@ We hope you enjoy using Chess Coach!
 
 
 Android Studio (Iguana 2023.2.1 Patch 2.)
+Need set up firebase.
 No additional step using this code in other pc.
