@@ -18,4 +18,4 @@ We hope you enjoy using Chess Coach!
 
 
 Android Studio (Iguana 2023.2.1 Patch 2.)
-No additional step using this code in other pc. (As long as you have flutter)
+No additional step using this code in other pc.
