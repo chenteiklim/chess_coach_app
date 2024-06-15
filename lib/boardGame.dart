@@ -101,64 +101,64 @@ class _BoardGameState extends State<BoardGame> {
 
     // Place rooks
     newBoard[0][0] = ChessPiece(
-        type: ChessPiecesType.rook,
-        isWhite: false,
-        imagePath: "assets/rook.png",
+      type: ChessPiecesType.rook,
+      isWhite: false,
+      imagePath: "assets/rook.png",
 
     );
 
 
 
     newBoard[0][7] = ChessPiece(
-        type: ChessPiecesType.rook,
-        isWhite: false,
-        imagePath: "assets/rook.png",
+      type: ChessPiecesType.rook,
+      isWhite: false,
+      imagePath: "assets/rook.png",
 
     );
     newBoard[7][0] = ChessPiece(
-        type: ChessPiecesType.rook,
-        isWhite: true,
-        imagePath: "assets/rook.png",
+      type: ChessPiecesType.rook,
+      isWhite: true,
+      imagePath: "assets/rook.png",
 
     );
     newBoard[7][7] = ChessPiece(
-        type: ChessPiecesType.rook,
-        isWhite: true,
-        imagePath: "assets/rook.png",
+      type: ChessPiecesType.rook,
+      isWhite: true,
+      imagePath: "assets/rook.png",
 
     );
 
     // Place knights
     newBoard[0][1] = ChessPiece(
-        type: ChessPiecesType.knight,
-        isWhite: false,
-        imagePath: "assets/knight.png",
+      type: ChessPiecesType.knight,
+      isWhite: false,
+      imagePath: "assets/knight.png",
 
     );
     newBoard[0][6] = ChessPiece(
-        type: ChessPiecesType.knight,
-        isWhite: false,
-        imagePath: "assets/knight.png",
+      type: ChessPiecesType.knight,
+      isWhite: false,
+      imagePath: "assets/knight.png",
 
     );
     newBoard[7][1] = ChessPiece(
-        type: ChessPiecesType.knight,
-        isWhite: true,
-        imagePath: "assets/knight.png",
+      type: ChessPiecesType.knight,
+      isWhite: true,
+      imagePath: "assets/knight.png",
 
     );
     newBoard[7][6] = ChessPiece(
-        type: ChessPiecesType.knight,
-        isWhite: true,
-        imagePath: "assets/knight.png",
+      type: ChessPiecesType.knight,
+      isWhite: true,
+      imagePath: "assets/knight.png",
 
     );
 
     // Place bishops
     newBoard[0][2] = ChessPiece(
-        type: ChessPiecesType.bishop,
-        isWhite: false,
-        imagePath: "assets/bishop.png",
+      type: ChessPiecesType.bishop,
+      isWhite: false,
+      imagePath: "assets/bishop.png",
 
     );
 
@@ -170,16 +170,16 @@ class _BoardGameState extends State<BoardGame> {
 
     );
     newBoard[7][2] = ChessPiece(
-        type: ChessPiecesType.bishop,
-        isWhite: true,
-        imagePath: "assets/bishop.png",
+      type: ChessPiecesType.bishop,
+      isWhite: true,
+      imagePath: "assets/bishop.png",
 
     );
 
     newBoard[7][5] = ChessPiece(
-        type: ChessPiecesType.bishop,
-        isWhite: true,
-        imagePath: "assets/bishop.png",
+      type: ChessPiecesType.bishop,
+      isWhite: true,
+      imagePath: "assets/bishop.png",
 
     );
 
@@ -439,12 +439,12 @@ class _BoardGameState extends State<BoardGame> {
         {
           candidateMoves.add([row + direction, col - 1]);
         }
-          if (isInBoard(row , col + 1) &&
-              (row == 3) &&
-              board[row ][col + 1] != null &&
-              board[row ][col + 1]!.isWhite != piece.isWhite &&
-              piece.isWhite == true
-          )
+        if (isInBoard(row , col + 1) &&
+            (row == 3) &&
+            board[row ][col + 1] != null &&
+            board[row ][col + 1]!.isWhite != piece.isWhite &&
+            piece.isWhite == true
+        )
         {
           candidateMoves.add([row + direction, col + 1]);
         }
@@ -452,9 +452,9 @@ class _BoardGameState extends State<BoardGame> {
             ( row == 4) &&
             board[row][col - 1] != null &&
             board[row][col - 1]!.isWhite != piece.isWhite &&
-        piece.isWhite == false
+            piece.isWhite == false
         )
-         {
+        {
           candidateMoves.add([row + direction, col + 1]);
         }
         if (isInBoard(row + direction, col + 1) &&
@@ -534,19 +534,19 @@ class _BoardGameState extends State<BoardGame> {
         break;
 
       case ChessPiecesType.rook:
-       if ((row == 7) && (col == 7) && piece.isWhite)  {
-         candidateMoves.add([7, col - 2]);
-       }
-       if ((row == 7) && (col == 0) && piece.isWhite)  {
-         candidateMoves.add([7, col + 3]);
-       }
-       if ((row == 0) && (col == 0) && !piece.isWhite)  {
-         candidateMoves.add([0, col + 3]);
-       }
-       if ((row == 0) && (col == 7) && !piece.isWhite)  {
-         candidateMoves.add([0, col - 2]);
-       }
-      // horizontal and vertical directions
+        if ((row == 7) && (col == 7) && piece.isWhite)  {
+          candidateMoves.add([7, col - 2]);
+        }
+        if ((row == 7) && (col == 0) && piece.isWhite)  {
+          candidateMoves.add([7, col + 3]);
+        }
+        if ((row == 0) && (col == 0) && !piece.isWhite)  {
+          candidateMoves.add([0, col + 3]);
+        }
+        if ((row == 0) && (col == 7) && !piece.isWhite)  {
+          candidateMoves.add([0, col - 2]);
+        }
+        // horizontal and vertical directions
         var directions = [
           [-1, 0], // up
           [1, 0], // down
@@ -701,7 +701,7 @@ class _BoardGameState extends State<BoardGame> {
     if (selectedPiece?.type == ChessPiecesType.king && board[7][6] == null && selectedPiece?.isWhite == true  ) {
       // Save the previous king position
       // Check for short castling and update whiteShortCastle
-        whiteShortCastle = true;
+      whiteShortCastle = true;
 
     }
     if (selectedPiece?.type == ChessPiecesType.king && board[7][3] == null && selectedPiece?.isWhite == true  ) {
@@ -793,19 +793,19 @@ class _BoardGameState extends State<BoardGame> {
           ));
     }
 
-      isWhiteTurn = !isWhiteTurn;
-      if (whiteShortCastle){
-        isWhiteTurn = true;
-      }
-      if (whiteLongCastle){
-        isWhiteTurn = true;
-      }
-      if (blackShortCastle){
-        isWhiteTurn = false;
-      }
-      if (blackLongCastle){
-        isWhiteTurn = false;
-      }
+    isWhiteTurn = !isWhiteTurn;
+    if (whiteShortCastle){
+      isWhiteTurn = true;
+    }
+    if (whiteLongCastle){
+      isWhiteTurn = true;
+    }
+    if (blackShortCastle){
+      isWhiteTurn = false;
+    }
+    if (blackLongCastle){
+      isWhiteTurn = false;
+    }
 
   }
 
@@ -998,7 +998,7 @@ class _BoardGameState extends State<BoardGame> {
                           onTap: () {
                             pieceSelected(row, col);
                             print('Selected Index: $indexeg');// Print the index here
-                            },
+                          },
                           isSelected: isSelected,
                           isSquareWhite: isSquareWhite(indexeg),
                           piece: board[row][col],
@@ -1012,37 +1012,51 @@ class _BoardGameState extends State<BoardGame> {
               ),
               Column(
 
+
                 children: [
-                  for (int i = 8; i > 0; i--)
-                    Padding(
-                    padding: EdgeInsets.only(top: i == 1 ? 25 : 25),
-                    child: Text(
-                        '$i',
-                        style: TextStyle(fontSize: 16, color: Colors.white ),
+                  if (_isBoardRotated)
+                  // Loop for rotated orientation (i = 8 to 1)
+                    for (int i = 1; i <= 8; i++)
+                      Padding(
+                        padding: EdgeInsets.only(top: i == 1 ? 25 : 25),
+                        child: Text(
+                          '$i',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                       ),
-                    ),
+                  if (!_isBoardRotated)
+                  // Loop for normal orientation (i = 1 to 8)
+                    for (int i = 8; i >= 1; i--)
+                      Padding(
+                        padding: EdgeInsets.only(top: i == 1 ? 25 : 25),
+                        child: Text(
+                          '$i',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
                 ],
+
               ),
             ],
           ),
-    Container(
-      width: 400,
-      height: 40,
-      color: Colors.black,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          for (var letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
-            Padding(
-              padding: EdgeInsets.only(left: letter == 'a' ? 0 : 3),
-              child: Text(
-                    letter,
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+          Container(
+            width: 400,
+            height: 40,
+            color: Colors.black,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                for (var letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+                  Padding(
+                    padding: EdgeInsets.only(left: letter == 'a' ? 0 : 3),
+                    child: Text(
+                      letter,
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ],
-      ),
-    ),
           Container(
             width: 500,
             height:200,
@@ -1050,7 +1064,122 @@ class _BoardGameState extends State<BoardGame> {
             // Label above the chessboard
             padding: const EdgeInsets.only(left: 20, top: 30,),
             child: Text(
-              '${_moveId == 1 ? 'As a white you have a lot of option to begin, now i will teach you the easiest openning for white which is d4. Now D4 ' : _moveId == 2 ? 'Now is black to move, the black has a lot of option here, now d5. d5 free up the square of dark square bishop and control the center.' : _moveId == 3 ? 'Third Move' : '$_moveId Move'}',
+              '${_moveId == 1
+                  ? 'White start with d4 which most easiest to recognized its pattern.'
+                  : _moveId == 2
+                  ? 'It\'s black\'s turn to move. Black has many options here. Now d5. d5 frees up the square of the dark square bishop and controls the center squares, c4 and e4.'
+                  : _moveId == 3
+                  ? 'Now white can choose to gambit the pawn or continue developing pieces. Let\'s continue developing pieces with Ng3-f3.'
+                  : _moveId == 4
+                  ? 'Black need to develop the piece, The more the pieces, the more weapon to destroy opponent. Now Ng8-f6'
+                  : _moveId == 5
+                  ? 'White can move the powerful bishop the most active square, now bc1-f4'
+                  : _moveId == 6
+                  ? 'Black does the same by activating bishop, now bc8-f5'
+                  : _moveId == 7
+                  ? 'Following principle of chess, knight before bishop, knight c3 is playable but will blocking c2 pawn, now kb1-d2'
+                  : _moveId == 8
+                  ? 'Black also activate knight toward center, now kb8-d4'
+                  : _moveId == 9
+                  ? 'One more bishop need to be activated, now e3'
+                  : _moveId == 10
+                  ? 'black also does the same, e6'
+                  : _moveId == 11
+                  ? 'Black keep copying white, if keep progress like this will be draw which white dun want, now c4, do some pawn break, maintain tension and time for attack. Without pawn break mean waiting to defense which harder to play'
+                  : _moveId == 12
+                  ? 'Black accept the tension, taking pawn is no good since it help white activate light square bishop. Now bf8-e7. Black try to play solid since defense is needed when facing attack. '
+                  : _moveId == 13
+                  ? 'One more bishop need to be activated, now bf1-f2'
+                  : _moveId == 14
+                  ? 'After finish development need castle, now black castle king side'
+                  : _moveId == 15
+                  ? 'After finish development need castle, now black castle king side'
+                  : _moveId == 16
+                  ? 'White does the same, now castle'
+                  : _moveId == 17
+                  ? 'White does the same, now castle'
+                  : _moveId == 18
+                  ? 'Light square bishop is annoying, now kf6-g5'
+                  : _moveId == 19
+                  ? 'White want to avoid being capture by this knight on the edge. make it out of the game, bf4-e5 '
+                  : _moveId == 20
+                  ? 'Capturing bishop is not good it follow by dxe5 which leave Nh5 remain at edge of board,now Nh5-f6'
+                  : _moveId == 21
+                  ? 'bishop worth more than knight now, be5-g3'
+                  : _moveId == 22
+                  ? 'h6, avoid backrank mate and free up square for bf5'
+                  : _moveId == 23
+                  ? 'White does the same, h3'
+                  : _moveId == 24
+                  ? 'c6, solidified the center, the more solid center has, the harder white to win'
+                  : _moveId == 25
+                  ? 'Activate your queen to most active square and cause threat, now Qd1-b3'
+                  : _moveId == 26
+                  ? 'Qd8-c8 to defense the pawn '
+                  : _moveId == 27
+                  ? 'align rook same rank with opponent queen, now Rf1-c1. it will pin the opponent c6'
+                  : _moveId == 28
+                  ? 'a5 to gaining some space'
+                  : _moveId == 29
+                  ? 'c5 to restrict opponent bishop and cause b7 backward pawn'
+                  : _moveId == 30
+                  ? 'bd8 to trade inactive dark square bishop with white active dark square bishop'
+                  : _moveId == 31
+                  ? 'Qc1 to overprotect e5 square'
+                  : _moveId == 32
+                  ? 'bc7 to trade bishop'
+                  : _moveId == 33
+                  ? 'bg3xc7 since bishop is no other good square to run'
+                  : _moveId == 34
+                  ? 'Q take c7 regaining material'
+                  : _moveId == 35
+                  ? 'a3. Trying to gain some space on queen side by a3 follow by b4'
+                  : _moveId == 36
+                  ? 'a4, to prevent white has strong pawn chain since can en-passant'
+                  : _moveId == 37
+                  ? 'b4, still need some pawn break though black can capture. Otherwise it is draw'
+                  : _moveId == 38
+                  ? 'en-passant'
+                  : _moveId == 39
+                  ? 'Nd2xb3, Regain pawn'
+                  : _moveId == 40
+                  ? 'Ne4 attack the queen'
+                  : _moveId == 41
+                  ? 'Qb2 running away'
+                  : _moveId == 42
+                  ? 'Rf1-b1 allign rook with queen'
+                  : _moveId == 43
+                  ? 'a4, gaining some space'
+                  : _moveId == 44
+                  ? 'b6 to start pawn break since rook align with queen'
+                  : _moveId == 45
+                  ? 'c5xb6 to open up the rook and cause c6 backward pawn'
+                  : _moveId == 46
+                  ? 'Qc7 takes b6 to avoid align with rook and put more pressure on Nb3'
+                  : _moveId == 47
+                  ? 'ra3 protect the knight'
+                  : _moveId == 48
+                  ? 'Qb4 to infiltrate white position'
+                  : _moveId == 49
+                  ? 'Qa1 to avoid pin'
+                  : _moveId == 50
+                  ? 'Nb6 and the game ended in draw since the position is 0.0 according to stockfish. Perfect game play always ended in draw. Remain calm when enemy no make mistake and take opportunity when opponent do some mistake.'
+
+
+
+
+
+
+
+
+
+
+
+                  : _moveId
+              }'
+
+
+              ,
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
